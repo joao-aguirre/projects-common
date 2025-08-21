@@ -1,0 +1,44 @@
+{
+    "version": 10,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 50
+    },
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "description": "Base preset, sets binary and install paths.",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": {
+                    "type": "PATH",
+                    "value": "${sourceDir}/artifacts"
+                }
+            }
+        },
+        {
+            "name": "base-debug",
+            "hidden": true,
+            "description": "Sets the build type to Debug.",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "base-release",
+            "hidden": true,
+            "description": "Sets the build type to Release.",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ]
+}

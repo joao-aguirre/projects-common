@@ -1,0 +1,67 @@
+{
+    "version": 10,
+    "configurePresets": [
+        {
+            "name": "windows-user",
+            "hidden": true,
+            "description": "Windows base configuration for CUDA and OptiX",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "environment": {
+                "VCPKG_ROOT": "D:/aguirre/projects/vcpkg"
+            },
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": {
+                    "type": "PATH",
+                    "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+                }
+            }
+        },
+        {
+            "name": "windows-user-debug",
+            "displayName": "Windows Debug",
+            "description": "Windows user debug configuration",
+            "inherits": ["base-debug", "windows-user"]
+        },
+        {
+            "name": "windows-user-release",
+            "displayName": "Windows Release",
+            "description": "Windows user release configuration",
+            "inherits": ["base-release", "windows-user"]
+        },
+        {
+            "name": "linux-user",
+            "hidden": true,
+            "description": "Linux base configuration for CUDA and OptiX",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "environment": {
+                "VCPKG_ROOT": "$env{HOME}/projects/vcpkg"
+            },
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": {
+                    "type": "PATH",
+                    "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+                }
+            }
+        },
+        {
+            "name": "linux-user-debug",
+            "displayName": "Linux Debug",
+            "description": "Linux user debug configuration",
+            "inherits": ["base-debug", "linux-user"]
+        },
+        {
+            "name": "linux-user-release",
+            "displayName": "Linux Release",
+            "description": "Linux user release configuration",
+            "inherits": ["base-release", "linux-user"]
+        }
+    ]
+}

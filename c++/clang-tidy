@@ -1,0 +1,5 @@
+---
+Checks: '*, -fuchsia-default-arguments-calls, -fuchsia-default-arguments-declarations, -fuchsia-trailing-return, -fuchsia-statically-constructed-objects, -modernize-redundant-void-arg, -modernize-use-trailing-return-type, -llvmlibc-implementation-in-namespace, -llvmlibc-restrict-system-libc-headers, -llvmlibc-callee-namespace, -misc-include-cleaner, -altera-unroll-loops'
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle: none
