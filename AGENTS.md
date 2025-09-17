@@ -1,8 +1,8 @@
-# GitHub Copilot Instructions
+# AGENTS.md
 
 ## General
 
-General rules for any interaction with GitHub Copilot.
+General rules for any AI agent interaction.
 
 ### Writing Style
 
