@@ -1,0 +1,58 @@
+FROM ubuntu:26.04
+ENV DEBIAN_FRONTEND=noninteractive
+# Copied from the official Astral uv page about Docker images available at:
+# https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
+# Modified to install uv at /usr/local/bin.
+COPY --from=ghcr.io/astral-sh/uv:0.11.26 /uv /uvx /usr/local/bin/
+LABEL maintainer="Joao Aguirre <aguirre.eng@gmail.com>"
+
+# Install Linux tools & uv dependencies.
+# The openGL dependencies are required by environments that use PyVista.
+# `gpg` is required to install MiKTeX. `build-essential` and the other packages
+# with it are required by Manin.
+RUN apt-get update && \
+    apt-get install --assume-yes --no-install-recommends \
+        ca-certificates curl zip unzip tar git git-lfs pkg-config gnupg \
+        libx11-6 libgl1 libxrender1 libxext6 xvfb \
+        build-essential ffmpeg python3-dev libcairo2-dev libpango1.0-dev \
+        dvisvgm texlive-full \
+        fzf ripgrep && \
+    rm --recursive --force /var/lib/apt/lists/*
+
+# Create configuration folders for user ubuntu (avoids the issue with top level
+# `.config` and `.local` folders being owned by the `root` user.
+RUN mkdir --parents \
+    /home/ubuntu/.config \
+    /home/ubuntu/.local/share \
+    && chown -R ubuntu:ubuntu \
+    /home/ubuntu/.config \
+    /home/ubuntu/.local
+
+# Install MiKTeX
+# RUN curl -fsSL https://miktex.org/download/key | \
+#     gpg --dearmor -o /usr/share/keyrings/miktex.gpg && \
+#     echo "deb [signed-by=/usr/share/keyrings/miktex.gpg] https://miktex.org/download/ubuntu resolute universe" | \
+#     tee /etc/apt/sources.list.d/miktex.list
+
+# RUN apt-get update && \
+#     apt-get install --assume-yes --no-install-recommends miktex && \
+#     rm --recursive --force /var/lib/apt/lists/*
+
+# RUN miktexsetup --shared=yes finish && \
+#     initexmf --admin --set-config-value=[MPM]AutoInstall=1 && \
+#     miktex --admin packages update-package-database && \
+#     (miktex --admin packages check-update || test $? = 100) && \
+#     miktex --admin packages update && \
+#     miktex --admin packages install xkeyval && \
+#     initexmf --admin --update-fndb && \
+#     kpsewhich xkeyval.sty
+
+# RUN runuser -u ubuntu -- kpsewhich xkeyval.sty
+
+# Install additional applications.
+# chezmoi
+RUN sh -c "$(curl -fsLS https://get.chezmoi.io)"
+
+# Set the default workspace folder and shell.
+WORKDIR /workspaces
+CMD ["/bin/bash"]

@@ -1,0 +1,154 @@
+# Image containing all basic applications for my development environment.
+# This base image has `uv`, as the Python and virtual environments manager, and
+# a series of command line applications I use.
+FROM ubuntu:26.04
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV TERM=xterm-256color
+
+# Copyied from the official Astral uv page about Docker images available at:
+# https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
+# Modified to install uv at /usr/local/bin.
+COPY --from=ghcr.io/astral-sh/uv:0.11.26 /uv /uvx /usr/local/bin/
+LABEL maintainer="Joao Aguirre <aguirre.eng@gmail.com>"
+
+# Install Linux tools & uv dependencies.
+# The openGL dependencies are required by environments that use PyVista.
+# `libreadline`, `libncurses`, and `libtinfo` are required by `nnn`.
+RUN apt-get update && \
+    apt-get install --assume-yes --no-install-recommends \
+        ca-certificates curl zip unzip tar git git-lfs pkg-config \
+        libx11-6 libgl1 libxrender1 libxext6 xvfb \
+        libreadline8t64 libncursesw6 libtinfo6 \
+        bash-completion tmux bat fzf ripgrep fd-find && \
+    rm --recursive --force /var/lib/apt/lists/*
+
+# Create the symlinks to `bat` and `fd`, since the installed versions on Ubuntu
+# have different names.
+RUN ln --symbolic /usr/bin/batcat /usr/local/bin/bat && \
+    ln --symbolic /usr/bin/fdfind /usr/local/bin/fd
+
+# Create configuration folders for user ubuntu (avoids the issue with top level
+# `.config` and `.local` folders being owned by the `root` user.
+RUN mkdir --parents \
+    /home/ubuntu/.config \
+    /home/ubuntu/.local/share \
+    && chown -R ubuntu:ubuntu \
+    /home/ubuntu/.config \
+    /home/ubuntu/.local
+
+# Application versions:
+ARG NNN_VERSION=5.2
+ARG NNN_SHA256="c96a5920d11c1ce079b4cc5224573a41172011f59238ef25d1dca3efc5bf43c9"
+ARG F2_VERSION=2.2.2
+ARG F2_SHA256="d44bca9d9a08721655e0fd4a3459f4c2b844abb896de3e6a74551e8bf5f51432"
+ARG LAZYGIT_VERSION=0.63.1
+ARG LAZYGIT_SHA256="8e033bc78c8e192dee9510e951f6c9e154289b7198d22c924ed1d0a951b0dac1"
+ARG CHEZMOI_VERSION=2.71.1
+ARG CHEZMOI_SHA256="e1fb16c962644d57f4d451c324aa86163d00faf5d035500f41fb48943a66dfed"
+ARG OHMYPOSH_VERSION=29.33.0
+ARG OHMYPOSH_SHA256="8f03885a53c3f33ebff12b31c0e01fc31a9f1c544be14c4127c1d1f63b63aa01"
+ARG NEOVIM_VERSION=0.12.4
+ARG NEOVIM_SHA256="012bf3fcac5ade43914df3f174668bf64d05e049a4f032a388c027b1ebd78628"
+ARG TREESITTER_VERSION=0.26.11
+ARG TREESITTER_SHA256="ff1b7f9863f2faafd78dc0e66d902ee85b37f709b314b22c009f51caf233eebd"
+ARG CODEX_VERSION=0.144.6
+ARG CODEX_SHA256="6a9def51a0ad8cea6684d8eb3bf033c89f33e3bc5cfe492f1a1e0a718451a1c6"
+
+# Install `nnn` from `dev-binaries`. 
+RUN curl --fail --silent --show-error --location \
+        "https://github.com/joao-aguirre/dev-binaries/releases/download/nnn-v${NNN_VERSION}-gitstatus-nerd/nnn-${NNN_VERSION}-linux-x86_64.tar.gz" \
+        --output /tmp/nnn.tar.gz && \
+    echo "${NNN_SHA256} /tmp/nnn.tar.gz" | sha256sum --check --strict && \
+    tar --extract --gzip --file /tmp/nnn.tar.gz --directory /tmp && \
+    install --mode 0755 \
+        "/tmp/nnn-${NNN_VERSION}-linux-x86_64/bin/nnn" /usr/local/bin/nnn && \
+    mkdir --parents /usr/local/share/nnn && \
+    cp --archive \
+        "/tmp/nnn-${NNN_VERSION}-linux-x86_64/share/nnn/." \
+        /usr/local/share/nnn/ && \
+    cp /usr/local/share/nnn/auto-completion/bash/nnn-completion.bash \
+        /usr/share/bash-completion/completions/nnn.bash && \
+    rm --recursive --force /tmp/nnn.tar.gz \
+        "/tmp/nnn-${NNN_VERSION}-linux-x86_64" && \
+    nnn -V
+
+# Install `f2`.
+RUN curl --fail --silent --show-error --location \
+        "https://github.com/ayoisaiah/f2/releases/download/v${F2_VERSION}/f2_${F2_VERSION}_linux_amd64.tar.gz" \
+        --output /tmp/f2.tar.gz && \
+    echo "${F2_SHA256} /tmp/f2.tar.gz" | sha256sum --check --strict && \
+    tar --extract --gzip --file /tmp/f2.tar.gz --directory /tmp && \
+    install --mode 0755 /tmp/f2 /usr/local/bin/f2 && \
+    rm --force /tmp/f2.tar.gz && \
+    curl --fail --silent --show-error --location \
+        "https://raw.githubusercontent.com/ayoisaiah/f2/master/scripts/completions/f2.bash" \
+        --output /usr/share/bash-completion/completions/f2.bash && \
+    f2 --version
+
+# Install `lazygit`.
+RUN curl --fail --silent --show-error --location \
+        "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_linux_x86_64.tar.gz" \
+        --output /tmp/lazygit.tar.gz && \
+    echo "${LAZYGIT_SHA256} /tmp/lazygit.tar.gz" | sha256sum --check --strict && \
+    tar --extract --gzip --file /tmp/lazygit.tar.gz --directory /tmp && \
+    install --mode 0755 /tmp/lazygit /usr/local/bin/lazygit && \
+    rm --force /tmp/lazygit.tar.gz && \
+    lazygit --version
+
+# Install `chezmoi`.
+RUN curl --fail --silent --show-error --location \
+        "https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/chezmoi_${CHEZMOI_VERSION}_linux_amd64.tar.gz" \
+        --output /tmp/chezmoi.tar.gz && \
+    echo "${CHEZMOI_SHA256} /tmp/chezmoi.tar.gz" | sha256sum --check --strict && \
+    tar --extract --gzip --file /tmp/chezmoi.tar.gz --directory /tmp && \
+    install --mode 0755 /tmp/chezmoi /usr/local/bin/chezmoi && \
+    cp /tmp/completions/chezmoi-completion.bash \
+        /usr/share/bash-completion/completions/chezmoi.bash && \
+    rm --recursive --force /tmp/chezmoi.tar.gz /tmp/completions && \
+    chezmoi --version
+
+# Install `oh-my-posh`.
+RUN curl --fail --silent --show-error --location \
+        "https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v${OHMYPOSH_VERSION}/posh-linux-amd64" \
+        --output /tmp/oh-my-posh && \
+    echo "${OHMYPOSH_SHA256} /tmp/oh-my-posh" | sha256sum --check --strict && \
+    install --mode 0755 /tmp/oh-my-posh /usr/local/bin/oh-my-posh && \
+    rm --force /tmp/oh-my-posh && \
+    oh-my-posh --version
+
+# Install `neovim`.
+RUN curl --fail --silent --show-error --location \
+        "https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/nvim-linux-x86_64.tar.gz" \
+        --output /tmp/nvim-linux-x86_64.tar.gz && \
+    echo "${NEOVIM_SHA256} /tmp/nvim-linux-x86_64.tar.gz" | sha256sum --check --strict && \
+    tar --extract --gzip --file /tmp/nvim-linux-x86_64.tar.gz --directory /opt && \
+    mv /opt/nvim-linux-x86_64 /opt/nvim && \
+    ln --symbolic /opt/nvim/bin/nvim /usr/local/bin/nvim && \
+    rm --force /tmp/nvim-linux-x86_64.tar.gz && \
+    nvim --version
+
+# Install `tree-sitter`.
+RUN curl --fail --silent --show-error --location \
+        "https://github.com/tree-sitter/tree-sitter/releases/download/v${TREESITTER_VERSION}/tree-sitter-cli-linux-x64.zip" \
+        --output /tmp/tree-sitter-cli-linux-x64.zip && \
+    echo "${TREESITTER_SHA256} /tmp/tree-sitter-cli-linux-x64.zip" | sha256sum --check --strict && \
+    unzip /tmp/tree-sitter-cli-linux-x64.zip -d /tmp && \
+    install --mode 0755 /tmp/tree-sitter /usr/local/bin/tree-sitter && \
+    rm --force /tmp/tree-sitter-cli-linux-x64.zip && \
+    tree-sitter --version
+
+# Install Codex.
+RUN curl --fail --silent --show-error --location \
+        "https://github.com/openai/codex/releases/download/rust-v${CODEX_VERSION}/codex-x86_64-unknown-linux-musl.tar.gz" \
+        --output /tmp/codex-x86_64-unknown-linux-musl.tar.gz && \
+    echo "${CODEX_SHA256} /tmp/codex-x86_64-unknown-linux-musl.tar.gz" | sha256sum --check --strict && \
+    tar --extract --gzip --file /tmp/codex-x86_64-unknown-linux-musl.tar.gz --directory /tmp && \
+    install --mode 0755 /tmp/codex-x86_64-unknown-linux-musl /usr/local/bin/codex && \
+    rm --force /tmp/codex-x86_64-unknown-linux-musl.tar.gz && \
+    codex --version
+
+# Set the default workspace folder and shell.
+WORKDIR /workspaces
+CMD ["/bin/bash"]

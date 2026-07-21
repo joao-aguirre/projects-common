@@ -1,0 +1,67 @@
+{
+    "name": "local-${localWorkspaceFolderBasename}",
+    "image": "aguirre/dev:local-uv",
+    "mounts": [
+        "type=bind,source=${localEnv:HOME}/projects/uv-data,target=/home/ubuntu/.uv-data"
+    ],
+    // Due to the multiple issues I've had with `uv` trying to create symlinks
+    // between different volumes and failing, with permissions trying to use a
+    // Docker volume, and with the Google Drive filesystem, I'm using a bind
+    // volume to store the `uv` cache, installation and even the virtual
+    // environments.
+    "containerEnv": {
+        "UV_PROJECT_ENVIRONMENT": "/home/ubuntu/.uv-data/venvs/${localWorkspaceFolderBasename}",
+        "UV_CACHE_DIR": "/home/ubuntu/.uv-data/cache",
+        "UV_PYTHON_INSTALL_DIR": "/home/ubuntu/.uv-data/python"
+    },
+    "postStartCommand": "mkdir --parents /home/ubuntu/.uv-data/cache /home/ubuntu/.uv-data/python /home/ubuntu/.uv-data/venvs/${localWorkspaceFolderBasename}",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "adpyke.codesnap",
+                "alefragnani.Bookmarks",
+                "analytic-signal.preview-tiff",
+                "Anjali.clipboard-history",
+                "bierner.emojisense",
+                "bierner.markdown-checkbox",
+                "bierner.markdown-footnotes",
+                "cardinal90.multi-cursor-case-preserve",
+                "Catppuccin.catppuccin-vsc-icons",
+                "charliermarsh.ruff",
+                "DavidAnson.vscode-markdownlint",
+                "davidlday.languagetool-linter",
+                "dbankier.vscode-quick-select",
+                "dnut.rewrap-revived",
+                "GitHub.remotehub",
+                "GitHub.vscode-pull-request-github",
+                "johnpapa.vscode-peacock",
+                "marp-team.marp-vscode",
+                "mechatroner.rainbow-csv",
+                "ms-python.mypy-type-checker",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-toolsai.jupyter",
+                "ms-toolsai.jupyter-keymap",
+                "ms-toolsai.jupyter-renderers",
+                "ms-toolsai.vscode-jupyter-cell-tags",
+                "ms-toolsai.vscode-jupyter-slideshow",
+                "notZaki.pandocciter",
+                "oijaz.unicode-latex",
+                "openai.chatgpt",
+                "tamasfe.even-better-toml",
+                "TatsuyaNakamori.resttext",
+                "tomoki1207.pdf",
+                "Tyriar.sort-lines"
+                // These are extensions that prefer to run from the "local"
+                // installation. I'll keep a list of them here so I do not add
+                // them to the list of extensions to install on the "remote"
+                // because I forget it.
+                // "vscode-icons-team.vscode-icons"
+                // "yzane.markdown-pdf"
+            ]
+        }
+    },
+    "remoteUser": "ubuntu",
+    "updateRemoteUserUID": true
+}

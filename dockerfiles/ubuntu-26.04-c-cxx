@@ -1,0 +1,18 @@
+FROM nvidia/cuda:13.3.0-devel-ubuntu26.04
+LABEL maintainer="Joao Aguirre <aguirre.eng@gmail.com>"
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
+# Install Linux C/C++ build tools and `nnn` dependencies.
+RUN apt-get update && \
+    apt-get install --assume-yes --no-install-recommends \
+        ca-certificates curl zip unzip tar git git-lfs pkg-config \
+        build-essential cmake ninja-build \
+        libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev \
+        libncursesw5-dev libreadline-dev libgpm-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set the default workspace folder and shell.
+WORKDIR /workspaces
+CMD ["/bin/bash"]

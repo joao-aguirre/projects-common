@@ -1,0 +1,41 @@
+FROM ubuntu:24.04
+ENV DEBIAN_FRONTEND=noninteractive
+# Copyied from the official Astral uv page about Docker images available at:
+# https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
+# Modified to install uv at /usr/local/bin.
+COPY --from=ghcr.io/astral-sh/uv:0.9.26 /uv /uvx /usr/local/bin/
+LABEL maintainer="Joao Aguirre <aguirre.eng@gmail.com>"
+
+# Install Linux tools & uv dependencies. Also install system libraries required
+# to have the container display exported and able to render 3D graphics.
+RUN apt-get update && \
+    apt-get install --assume-yes --no-install-recommends \
+        ca-certificates curl zip unzip tar git git-lfs pkg-config
+
+RUN apt-get install --assume-yes --no-install-recommends \
+        libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev \
+        libgl1 libglx0 libegl1 libgles2 \
+        libglx-mesa0 libgl1-mesa-dev libgl1-mesa-dri \
+        freeglut3-dev mesa-common-dev mesa-utils xvfb \
+        libxft2 libx11-6 libxrender1 libxext6 libxcursor1 libxinerama1
+
+# Install OpenFOAM and Gmsh.
+RUN curl -s https://dl.openfoam.com/add-debian-repo.sh | bash && \
+    apt-get install --assume-yes --no-install-recommends \
+        openfoam2412-default && \
+    rm --recursive --force /var/lib/apt/lists/*
+
+RUN curl -s https://gmsh.info/bin/Linux/gmsh-4.15.0-Linux64.tgz | \
+        tar --extract --gunzip --file - --directory /opt/
+
+# Create the cache directory and ensure the "ubuntu" user owns it (it can be
+# used to mount cache volumes).
+RUN mkdir --parents /home/ubuntu/.cache/uv && \
+        chown --recursive ubuntu:ubuntu /home/ubuntu/.cache
+
+# Set environment variables.
+ENV PATH=/usr/local/bin:/opt/gmsh-4.15.0-Linux64/bin:${PATH}
+
+# Set the default workspace folder and shell.
+WORKDIR /workspaces
+CMD ["/bin/bash"]
