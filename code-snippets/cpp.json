@@ -1,0 +1,56 @@
+{
+    // Place your snippets for cpp here. Each snippet is defined under a snippet name and has a prefix, body and 
+    // description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+    // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+    // same ids are connected.
+    // Example:
+    // "Print to console": {
+    //     "prefix": "log",
+    //     "body": [
+    //         "console.log('$1');",
+    //         "$2"
+    //     ],
+    //     "description": "Log output to console"
+    // }
+    "C/C++ debug pointer as array": {
+        "prefix": "debug-pointer-array",
+        "body": "*(<element-type>(*)[<number-elements>])pointer",
+        "description": "Expression to watch a pointer as an array in VSCode debug sessions."
+    },
+    "Format Eigen matrix as Python list.": {
+        "prefix": "eigen-format",
+        "body": [
+            "Eigen::IOFormat python_list(",
+            "    Eigen::FullPrecision,",
+            "    Eigen::DontAlignCols,",
+            " \", \", \",\\n\", \"[\", \"]\", \"[\\n\", \"\\n]\"",
+            ");"
+        ],
+        "description": "`Eigen::IOFormat` specification to print an `Eigen::Matrix` as a `Python` list."
+    },
+    "C/C++ UDF formatted cells print": {
+        "prefix": "udf-print-cells",
+        "body": [
+            "Message(\"[\\n\");",
+            "thread_loop_c_fluid(thread, domain)",
+            "{",
+            "    begin_c_loop_int(cell, thread)",
+            "    {",
+            "        Message(\"    [\\n\");",
+            "        c_node_loop(cell, thread, node_index)",
+            "        {",
+            "            node = C_NODE(cell, thread, node_index);",
+            "            Message(\"        [%.15e, %.15e, %.15e],\\n\", node->x[0], node->x[1], node->x[2]);",
+            "        }",
+            "    } end_c_loop_int(cell, thread)",
+            "}",
+            "Message(\"]\\n\");"
+        ],
+        "description": "Print the Fluent cells in a format that can be used on Python scripts."
+    },
+    "fmt-file": {
+        "prefix": "fmt-file",
+        "description": "Opens a file for writing using `fmt` (needs #include \"fmt/os.h\")",
+        "body": "auto $1 { fmt::output_file($2, fmt::file::WRONLY | fmt::file::CREATE) };"
+    }
+}

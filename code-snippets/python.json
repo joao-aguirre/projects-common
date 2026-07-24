@@ -1,0 +1,143 @@
+{
+	// Place your snippets for python here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+    // }
+    "rest BiTeX textual": {
+        "prefix": "rest-bib",
+        "body": [":cite:t:`$1`"],
+        "description": "reStructured Text BiTeX textual citation"
+    },
+    "rest BiTeX parenthetical": {
+        "prefix": "rest-bib",
+        "body": [":cite:p:`$1`"],
+        "description": "reStructured Text BiTeX parenthetical citation"
+    },
+    "Import and configure sympy": {
+        "prefix": "import-sympy",
+        "body": [
+            "import sympy",
+            "sympy.init_printing(use_latex=\"mathjax\")"
+        ],
+        "description": "Import sympy module and setup pretty printing for VSCode"
+    },
+    "twin-axis plot": {
+        "prefix": "twin-axis-plot",
+        "body": [
+            "figure = plt.figure(figsize=(10,8))",
+            "figure.tight_layout()",
+            "axis_left = figure.add_subplot()",
+            "axis_left.plot($1, $2, color=\"C0\")",
+            "axis_left.set_title(\"$3\")",
+            "axis_left.set_xlabel(\"$4\")",
+            "axis_left.set_ylabel(\"$5\", color=\"C0\")",
+            "axis_left.grid()",
+            "axis_right = axis_left.twinx()",
+            "axis_right.plot($1, result.y[1], color=\"C1\")",
+            "axis_right.set_ylabel(\"$6\", color=\"C1\")",
+            "axis_left.set_xticks(np.linspace(axis_left.get_xbound()[0], axis_left.get_xbound()[1], 5))",
+            "axis_left.set_yticks(np.linspace(axis_left.get_ybound()[0], axis_left.get_ybound()[1], 5))",
+            "axis_right.set_yticks(np.linspace(axis_right.get_ybound()[0], axis_right.get_ybound()[1], 5))"
+        ],
+        "description": "Matplotlib plot with two vertical axis sharing the same horizontal axis."
+    },
+    "numpy random uniform distribution": {
+        "prefix": "numpy-random-uniform",
+        "body":[
+            "generator = np.random.default_rng(seed=${1:seed})",
+            "${2:variable} = generator.uniform(low=${3:low}, high=${3:high})"
+        ],
+        "description": "Generation of a Numpy array using a default generator and a uniform distribution."
+    },
+    "examples - matplotlib 3D sphere + scatter": {
+        "prefix": "3d-sphere-scatter",
+        "body": [
+            "figure = plt.figure(figsize=(10,8),)",
+            "figure.tight_layout()",
+            "figure.suptitle(\"Naive Points Generation\")",
+            "axis = figure.add_subplot(projection=\"3d\")",
+            "axis.set_xlabel(\"x\")",
+            "axis.set_ylabel(\"y\")",
+            "axis.set_zlabel(\"z\")",
+            "u = np.linspace(0.0, 2.0 * np.pi, 25)",
+            "v = np.linspace(0.0, np.pi, 25)",
+            "sphere_x = np.outer(np.cos(u), np.sin(v))",
+            "sphere_y = np.outer(np.sin(u), np.sin(v))",
+            "sphere_z = np.outer(np.ones(np.size(u)), np.cos(v))",
+            "axis.plot_surface(sphere_x, sphere_y, sphere_z, alpha=0.5)",
+            "axis.scatter(naive_x, naive_y, naive_z, marker=\".\", color=\"black\", alpha=0.75)",
+            "axis.set_aspect(\"equal\")"
+        ],
+        "description": "Example of a Matplotlib 3D plot of a spherical surface with scattered points over it."
+    },
+    "re-search-example": {
+        "prefix": "re-search",
+        "body": [
+            "from pathlib import Path",
+            "import re",
+            "with open(\".mu_repo\") as mu_repo:",
+                "for mu_line in mu_repo:",
+                    "mu_line = mu_line.strip()",
+                    "if not mu_line.startswith(\"repo=\"):",
+                        "continue",
+                    "repo_config_data = (Path.cwd() / mu_line.split(sep=\"=\")[1] / \".git\" / \"config\").read_text()",
+                    "repo_url_re = r\"url\\s*=\\s*(.+)\\n\"",
+                    "repo_url = re.search(repo_url_re, repo_config_data).group(1)",
+                    "print(repo_url)"
+        ],
+        "description": "Small example of the usage of the re.search method."
+    },
+    "notebook dark mode": {
+        "prefix": "notebook-dark",
+        "body": [
+            "%%html",
+            "<style>",
+            ".cell-output-ipywidget-background {",
+            "    background-color: transparent !important;",
+            "}",
+            ":root {",
+            "    --jp-widgets-color: var(--vscode-editor-foreground);",
+            "    --jp-widgets-font-size: var(--vscode-editor-font-size);",
+            "}  ",
+            "</style>"
+        ],
+        "description": "Set dark mode for notebook in VSCode Jupyter notebooks."
+    },
+    "hexagon (polygon) + vector plot": {
+        "prefix": "hexagon-vector",
+        "body": [
+            "import matplotlib.pyplot as plt",
+            "from matplotlib.patches import RegularPolygon",
+            "figure = plt.figure()",
+            "axis = figure.add_subplot()",
+            "center = (0, 0)",
+            "radius = 1.0",
+            "number_vertices = 6",
+            "angle = np.radians(30.0)",
+            "hexagon = RegularPolygon(",
+            "    xy=center,",
+            "    numVertices=number_vertices,",
+            "    radius=radius,",
+            "    orientation=angle,",
+            "    facecolor=\"none\",",
+            "    edgecolor\"black\",",
+            ")",
+            "axis.add_patch(hexagon)",
+            "axis.set_xlim(-2.5, 2.5)",
+            "axis.set_ylim(-2.5, 2.5)",
+            "axis.set_aspect(\"equal\", adjustable=\"box\")",
+            "vector = np.array([[0.0, 0.5]])",
+            "axis.quiver(0.0, 0.0, *(vector[0]), angles='xy', scale_units='xy', scale=1)",
+            "plt.show()"
+        ]
+    }
+}

@@ -1,0 +1,39 @@
+{
+    // Place your snippets for jupyter here. Each snippet is defined under a snippet name and has a prefix, body and 
+    // description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+    // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+    // same ids are connected.
+    // Example:
+    // "Print to console": {
+    //     "prefix": "log",
+    //     "body": [
+    //         "console.log('$1');",
+    //         "$2"
+    //     ],
+    //     "description": "Log output to console"
+    // }
+    "Import and configure sympy": {
+        "prefix": "import-sympy",
+        "body": [
+            "import sympy",
+            "sympy.init_printing(use_latex=\"mathjax\")"
+        ],
+        "description": "Import sympy module and setup pretty printing for VSCode."
+    },
+    "tqdm dark mode":{ 
+        "prefix": "tqdm-dark",
+        "body": [
+            "%%html",
+            "<style>",
+            ".cell-output-ipywidget-background {",
+            "    background-color: transparent !important;",
+            "}",
+            ":root {",
+            "    --jp-widgets-color: var(--vscode-editor-foreground);",
+            "    --jp-widgets-font-size: var(--vscode-editor-font-size);",
+            "}  ",
+            "</style>"
+        ],
+        "description": "Set dark mode for tqdm in VSCode Jupyter notebooks."
+    }
+}
