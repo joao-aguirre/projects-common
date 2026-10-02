@@ -1,6 +1,6 @@
 {
-    "name": "local-${localWorkspaceFolderBasename}",
-    "image": "aguirre/dev:local-uv",
+    "name": "aguirre/dev:ubuntu-uv-${localWorkspaceFolderBasename}",
+    "image": "aguirre/dev:ubuntu-uv",
     "mounts": [
         "type=bind,source=${localEnv:HOME}/projects/uv-data,target=/home/ubuntu/.uv-data"
     ],
@@ -10,11 +10,16 @@
     // volume to store the `uv` cache, installation and even the virtual
     // environments.
     "containerEnv": {
-        "UV_PROJECT_ENVIRONMENT": "/home/ubuntu/.uv-data/venvs/${localWorkspaceFolderBasename}",
         "UV_CACHE_DIR": "/home/ubuntu/.uv-data/cache",
         "UV_PYTHON_INSTALL_DIR": "/home/ubuntu/.uv-data/python"
     },
-    "postStartCommand": "mkdir --parents /home/ubuntu/.uv-data/cache /home/ubuntu/.uv-data/python /home/ubuntu/.uv-data/venvs/${localWorkspaceFolderBasename}",
+    "postStartCommand": [
+        "mkdir",
+        "--parents",
+        "/home/ubuntu/.uv-data/cache",
+        "/home/ubuntu/.uv-data/python",
+        "/home/ubuntu/.uv-data/venvs/engie"
+    ],
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "customizations": {
         "vscode": {
@@ -23,6 +28,7 @@
                 "alefragnani.Bookmarks",
                 "analytic-signal.preview-tiff",
                 "Anjali.clipboard-history",
+                "astral-sh.tyi",
                 "bierner.emojisense",
                 "bierner.markdown-checkbox",
                 "bierner.markdown-footnotes",
@@ -59,6 +65,13 @@
                 // because I forget it.
                 // "vscode-icons-team.vscode-icons"
                 // "yzane.markdown-pdf"
+            ]
+        },
+        "zed": {
+            "extensions": [
+                "catppuccin",
+                "catppuccin-icons",
+                "vscode-dark-modern"
             ]
         }
     },
